@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blah Blah English — Ücretsiz Konuşma Kulübü</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#12203A">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #12203A;
+    --bg-deep: #0C1729;
+    --surface: #1B2C4C;
+    --surface-hi: #23375C;
+    --line: rgba(232,163,61,0.16);
+    --amber: #E8A33D;
+    --amber-soft: rgba(232,163,61,0.14);
+    --teal: #5FB49C;
+    --teal-soft: rgba(95,180,156,0.14);
+    --coral: #E1694B;
+    --text: #F3EEE2;
+    --muted: #93A0BE;
+    --faint: #5C6788;
+    --display: 'Fraunces', serif;
+    --body: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(ellipse at 20% -10%, #1A2D50 0%, var(--bg) 45%, var(--bg-deep) 100%);
+    color: var(--text);
+    font-family: var(--body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width: 960px; margin: 0 auto; padding: 28px 24px 80px;}
+
+  /* Header */
+  .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:36px;}
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{width:34px; height:34px; display:flex; align-items:flex-end; gap:2px;}
+  .brand-mark span{width:4px; background:var(--amber); border-radius:2px; animation: wave 1.6s ease-in-out infinite;}
+  .brand-mark span:nth-child(1){height:10px; animation-delay:0s;}
+  .brand-mark span:nth-child(2){height:22px; animation-delay:0.15s;}
+  .brand-mark span:nth-child(3){height:14px; animation-delay:0.3s;}
+  .brand-mark span:nth-child(4){height:26px; animation-delay:0.45s;}
+  .brand-mark span:nth-child(5){height:8px; animation-delay:0.6s;}
+  @keyframes wave{0%,100%{transform:scaleY(0.5);} 50%{transform:scaleY(1);}}
+  .brand-name{font-family:var(--display); font-size:20px; font-weight:600; letter-spacing:0.2px;}
+  .admin-toggle{font-family:var(--mono); font-size:11px; color:var(--faint); background:none; border:1px solid var(--line); padding:7px 12px; border-radius:20px; cursor:pointer; letter-spacing:0.4px;}
+  .admin-toggle:hover{color:var(--amber); border-color:var(--amber);}
+
+  /* Hero */
+  .hero{margin-bottom:40px;}
+  .eyebrow{font-family:var(--mono); font-size:12px; color:var(--teal); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:14px;}
+  .hero h1{font-family:var(--display); font-weight:600; font-size:44px; line-height:1.12; margin:0 0 16px; letter-spacing:-0.5px;}
+  .hero h1 em{font-style:italic; color:var(--amber); font-weight:500;}
+  .hero p{color:var(--muted); font-size:16px; line-height:1.6; max-width:520px; margin:0;}
+
+  /* Cards */
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:28px;}
+  .card + .card{margin-top:20px;}
+
+  /* Form */
+  label{display:block; font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.6px; text-transform:uppercase; margin-bottom:7px;}
+  .field{margin-bottom:18px;}
+  input[type=text], input[type=number], textarea, select{
+    width:100%; background:var(--bg-deep); border:1px solid var(--line); border-radius:10px;
+    color:var(--text); font-family:var(--body); font-size:14.5px; padding:12px 14px; outline:none;
+  }
+  input:focus, textarea:focus, select:focus{border-color:var(--amber);}
+  textarea{min-height:80px; resize:vertical;}
+  .level-row{display:flex; gap:10px;}
+  .level-pill{flex:1; text-align:center; padding:12px 8px; border-radius:10px; border:1px solid var(--line); cursor:pointer; font-size:13.5px; color:var(--muted); transition:0.15s;}
+  .level-pill.active{border-color:var(--amber); color:var(--amber); background:var(--amber-soft);}
+  .checkline{display:flex; gap:10px; align-items:flex-start; font-size:13.5px; color:var(--muted); line-height:1.5; margin:18px 0;}
+  .checkline input{margin-top:3px;}
+  .btn{font-family:var(--body); font-weight:600; font-size:14.5px; border:none; border-radius:10px; padding:13px 22px; cursor:pointer; transition:0.15s;}
+  .btn-primary{background:var(--amber); color:#1A1204;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-primary:disabled{opacity:0.4; cursor:not-allowed;}
+  .btn-ghost{background:none; border:1px solid var(--line); color:var(--text);}
+  .btn-ghost:hover{border-color:var(--muted);}
+  .btn-danger{background:none; border:1px solid rgba(225,105,75,0.4); color:var(--coral);}
+  .btn-danger:hover{background:rgba(225,105,75,0.1);}
+  .btn-small{padding:8px 14px; font-size:13px; border-radius:8px;}
+
+  /* Pending */
+  .pending-wrap{text-align:center; padding:50px 28px;}
+  .pending-wrap h2{font-family:var(--display); font-size:26px; font-weight:600; margin:20px 0 10px;}
+  .pending-wrap p{color:var(--muted); font-size:14.5px; max-width:380px; margin:0 auto 24px; line-height:1.6;}
+  .pulse-dot{width:12px; height:12px; border-radius:50%; background:var(--amber); margin:0 auto; animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1; transform:scale(1);} 50%{opacity:0.4; transform:scale(1.6);}}
+
+  /* Dashboard */
+  .dash-grid{display:grid; grid-template-columns: 1fr 1fr; gap:20px;}
+  @media(max-width:640px){.dash-grid{grid-template-columns:1fr;}}
+  .badge{display:inline-block; font-family:var(--mono); font-size:11px; padding:5px 11px; border-radius:20px; letter-spacing:0.4px;}
+  .badge-level{background:var(--teal-soft); color:var(--teal);}
+  .section-title{font-family:var(--display); font-size:19px; font-weight:600; margin:0 0 4px;}
+  .section-sub{color:var(--muted); font-size:13.5px; margin:0 0 18px;}
+  .tabs{display:flex; gap:6px; margin-bottom:22px; border-bottom:1px solid var(--line); padding-bottom:0;}
+  .tab{font-family:var(--mono); font-size:12.5px; color:var(--faint); padding:10px 4px; margin-right:22px; cursor:pointer; border-bottom:2px solid transparent; letter-spacing:0.3px;}
+  .tab.active{color:var(--amber); border-color:var(--amber);}
+
+  .room-item{display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border:1px solid var(--line); border-radius:12px; margin-bottom:10px; background:var(--bg-deep);}
+  .room-item .rname{font-weight:600; font-size:14.5px;}
+  .room-item .rmeta{color:var(--faint); font-size:12px; font-family:var(--mono); margin-top:3px;}
+  .empty{color:var(--faint); font-size:13.5px; padding:20px 0; text-align:center; border:1px dashed var(--line); border-radius:12px;}
+
+  .friend-row{display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--line);}
+  .friend-row:last-child{border-bottom:none;}
+  .avatar{width:34px; height:34px; border-radius:50%; background:var(--surface-hi); display:flex; align-items:center; justify-content:center; font-family:var(--display); font-size:14px; color:var(--amber); margin-right:10px;}
+  .frow-left{display:flex; align-items:center;}
+
+  /* Room screen */
+  .room-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;}
+  .room-title{font-family:var(--display); font-size:24px; font-weight:600;}
+  .voice-ring{width:120px; height:120px; border-radius:50%; margin:20px auto; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, var(--amber-soft) 0%, transparent 70%); position:relative;}
+  .voice-ring .core{width:70px; height:70px; border-radius:50%; background:var(--surface-hi); border:1px solid var(--amber); display:flex; align-items:center; justify-content:center; font-family:var(--display); font-size:22px; color:var(--amber); animation:breathe 2.2s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{transform:scale(1);} 50%{transform:scale(1.06);}}
+  .room-controls{display:flex; gap:10px; justify-content:center; margin-top:24px;}
+  .participant-list{margin-top:24px;}
+  .part-row{display:flex; align-items:center; gap:10px; padding:9px 0; font-size:13.5px; color:var(--muted);}
+  .mic-icon{width:16px; height:16px; opacity:0.6;}
+
+  .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--surface-hi); border:1px solid var(--amber); color:var(--text); padding:12px 20px; border-radius:10px; font-size:13.5px; opacity:0; pointer-events:none; transition:0.25s; z-index:50;}
+  .modal-overlay{position:fixed; inset:0; background:rgba(6,12,24,0.72); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:26px; width:100%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.4);}
+  .modal-box h3{font-family:var(--display); font-size:20px; font-weight:600; margin:0 0 6px;}
+  .modal-box p.msub{color:var(--muted); font-size:13.5px; margin:0 0 18px; line-height:1.5;}
+  .modal-box .modal-actions{display:flex; gap:10px; margin-top:20px; justify-content:flex-end;}
+  .dm-thread{display:flex; flex-direction:column; gap:8px; padding:16px 4px; min-height:300px; max-height:52vh; overflow-y:auto;}
+  .bubble{max-width:75%; padding:10px 14px; border-radius:16px; font-size:14px; line-height:1.4; word-wrap:break-word;}
+  .bubble.me{align-self:flex-end; background:var(--amber); color:#1A1204; border-bottom-right-radius:4px;}
+  .bubble.them{align-self:flex-start; background:var(--surface-hi); color:var(--text); border-bottom-left-radius:4px;}
+  .bubble-time{font-size:10px; opacity:0.6; margin-top:3px; font-family:var(--mono);}
+  .dm-input-row{display:flex; gap:10px; margin-top:14px;}
+  .dm-input-row input{flex:1;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
+
+  .app-item{border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px; background:var(--bg-deep);}
+  .app-item h4{margin:0 0 4px; font-family:var(--display); font-size:16px;}
+  .app-item p{margin:2px 0; color:var(--muted); font-size:13px; line-height:1.5;}
+  .app-actions{display:flex; gap:8px; margin-top:12px;}
+  .status-chip{font-family:var(--mono); font-size:10.5px; padding:4px 9px; border-radius:20px; letter-spacing:0.4px;}
+  .status-pending{background:var(--amber-soft); color:var(--amber);}
+  .status-approved{background:var(--teal-soft); color:var(--teal);}
+  .status-rejected{background:rgba(225,105,75,0.14); color:var(--coral);}
+  .hidden{display:none !important;}
+  .link-btn{background:none; border:none; color:var(--amber); font-family:var(--mono); font-size:12.5px; cursor:pointer; padding:0; text-decoration:underline; text-underline-offset:3px;}
+  footer{text-align:center; color:var(--faint); font-size:12px; margin-top:60px; font-family:var(--mono);}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<script>
+/* ---------- Storage helpers ----------
+   Kişisel veri (profil, arkadaşlar) -> tarayıcının localStorage'ı
+   Paylaşılan veri (başvurular, odalar) -> Supabase (herkes aynı veriyi görür)
+   AŞAĞIYA KENDİ SUPABASE BİLGİLERİNİ YAPIŞTIR: */
+const SUPABASE_URL = 'https://ujothucxbekbtkdugtxh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_aD_vcN8JilEXnnL9LaygwQ_BRde5K21';
+const VIDEOSDK_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI0MGJlNzU0Yi1hZTEzLTQxY2UtYmM3YS1hY2E0Y2Q3MGZjYzUiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIiwiYWxsb3dfbW9kIl0sImlhdCI6MTc4NjM3ODc1MSwiZXhwIjoxODAxOTMwNzUxLCJ2ZXJzaW9uIjoyLCJyb2xlcyI6WyJydGMiXX0.wBQHExsP2FFN8q1Ji5-OUyUlaF2oCEFRA9-v6bj9jTE';
+
+const memStore = {};
+let supabaseClient = null;
+try{
+  if(window.supabase && SUPABASE_URL !== 'YOUR_SUPABASE_URL'){
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+}catch(e){ console.warn('Supabase başlatılamadı', e); }
+
+async function sGet(key, shared=false){
+  if(!shared){
+    try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+    catch(e){ return memStore[key] ?? null; }
+  }
+  if(supabaseClient){
+    try{
+      const { data, error } = await supabaseClient.from('kv_store').select('value').eq('key', key).maybeSingle();
+      if(error || !data) return null;
+      return data.value;
+    }catch(e){ return memStore[key] ?? null; }
+  }
+  return memStore[key] ?? null;
+}
+
+async function sSet(key, value, shared=false){
+  if(!shared){
+    try{ localStorage.setItem(key, JSON.stringify(value)); }catch(e){ memStore[key] = value; }
+    return;
+  }
+  if(supabaseClient){
+    try{ await supabaseClient.from('kv_store').upsert({ key, value }); }
+    catch(e){ memStore[key] = value; }
+    return;
+  }
+  memStore[key] = value;
+}
+
+/* ---------- App state ---------- */
+let profile = null;       // personal: {id, name, level, status, appId}
+let applications = [];    // shared: list of applications
+let rooms = [];           // shared: list of rooms
+let friends = [];         // personal: (artık kullanılmıyor, geriye dönük uyum için)
+let friendships = [];     // shared: {id, from, to, status:'pending'|'accepted'}
+let messages = [];        // shared: {id, from, to, text, time}
+let invites = [];         // shared: {id, from, to, roomId, roomName, time, status}
+let dmWith = null;        // şu an açık olan sohbet (kullanıcı adı)
+let reports = [];         // shared: list of user reports
+let adminMode = false;
+let adminUnlocked = false; // gerçek admin girişi yapıldı mı
+let authMode = 'apply'; // 'apply' | 'login'
+let currentTab = 'match';
+let currentRoom = null;
+let selectedLevel = 'orta';
+let selectedTopic = 'Daily Conversation';
+
+/* Şifreyi güvenli şekilde (geri döndürülemez) hash'ler — düz metin saklanmaz */
+async function hashPassword(pw){
+  const data = new TextEncoder().encode('bbe-salt-2026:' + pw);
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+/* Yönetici şifresi (hash'lenmiş hali saklanır, düz metin kodda görünmez) */
+const ADMIN_PASSWORD_HASH = '9eb8758aa1939693907883429bbf19fb548e0183601e95e3a5f01ef408dad197';
+
+const LEVELS = [
+  {id:'baslangic', label:'Başlangıç'},
+  {id:'orta', label:'Orta'},
+  {id:'ileri', label:'İleri'}
+];
+const ROOM_TOPICS = ['English Speaking','Turkish Practice','German Room','IELTS Preparation','Daily Conversation','Business English','Travel English'];
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* Site temalı, prompt() yerine geçen giriş penceresi */
+function modalPrompt({title, subtitle, placeholder, options}){
+  return new Promise(resolve=>{
+    const overlay = document.getElementById('modalOverlay');
+    const box = document.getElementById('modalBox');
+    let inner = `<h3>${title}</h3>`;
+    if(subtitle) inner += `<p class="msub">${subtitle}</p>`;
+    if(options){
+      // seçenekli mod: her seçenek bir buton
+      inner += `<div style="display:flex; flex-direction:column; gap:8px;">`;
+      options.forEach((opt,i)=>{
+        inner += `<button class="btn btn-ghost" data-modal-opt="${i}" style="text-align:left;">${opt}</button>`;
+      });
+      inner += `</div><div class="modal-actions"><button class="btn btn-ghost btn-small" data-modal-cancel>İptal</button></div>`;
+    } else {
+      inner += `<input type="text" id="modalInput" placeholder="${placeholder||''}" style="width:100%; background:var(--bg-deep); border:1px solid var(--line); border-radius:10px; color:var(--text); font-family:var(--body); font-size:14.5px; padding:12px 14px; outline:none;">`;
+      inner += `<div class="modal-actions"><button class="btn btn-ghost btn-small" data-modal-cancel>İptal</button><button class="btn btn-primary btn-small" data-modal-ok>Tamam</button></div>`;
+    }
+    box.innerHTML = inner;
+    overlay.classList.add('show');
+    const input = document.getElementById('modalInput');
+    if(input){ input.focus(); input.addEventListener('keydown', e=>{ if(e.key==='Enter') finish(input.value); }); }
+    function finish(val){ overlay.classList.remove('show'); box.innerHTML=''; resolve(val); }
+    box.querySelectorAll('[data-modal-opt]').forEach(b=>{
+      b.onclick = ()=> finish(options[parseInt(b.dataset.modalOpt)]);
+    });
+    const okBtn = box.querySelector('[data-modal-ok]');
+    if(okBtn) okBtn.onclick = ()=> finish(input ? input.value : '');
+    box.querySelector('[data-modal-cancel]').onclick = ()=> finish(null);
+    overlay.onclick = (e)=>{ if(e.target===overlay) finish(null); };
+  });
+}
+
+async function loadAll(){
+  profile = await sGet('sc:profile', false);
+  applications = (await sGet('sc:applications', true)) || [];
+  rooms = (await sGet('sc:rooms', true)) || [];
+  friends = (await sGet('sc:friends', false)) || [];
+  friendships = (await sGet('sc:friendships', true)) || [];
+  messages = (await sGet('sc:messages', true)) || [];
+  invites = (await sGet('sc:invites', true)) || [];
+  reports = (await sGet('sc:reports', true)) || [];
+}
+
+async function saveProfile(){ await sSet('sc:profile', profile, false); }
+async function saveApplications(){ await sSet('sc:applications', applications, true); }
+async function saveRooms(){ await sSet('sc:rooms', rooms, true); }
+async function saveFriends(){ await sSet('sc:friends', friends, false); }
+async function saveFriendships(){ await sSet('sc:friendships', friendships, true); }
+async function saveMessages(){ await sSet('sc:messages', messages, true); }
+async function saveInvites(){ await sSet('sc:invites', invites, true); }
+
+/* Arkadaşlık yardımcıları */
+function myAcceptedFriends(){
+  const me = profile.name;
+  return friendships.filter(f=>f.status==='accepted' && (f.from===me || f.to===me))
+    .map(f=> f.from===me ? f.to : f.from);
+}
+function myIncomingRequests(){
+  const me = profile.name;
+  return friendships.filter(f=>f.status==='pending' && f.to===me);
+}
+function myOutgoingRequests(){
+  const me = profile.name;
+  return friendships.filter(f=>f.status==='pending' && f.from===me).map(f=>f.to);
+}
+function friendshipWith(name){
+  const me = profile.name;
+  return friendships.find(f=> (f.from===me && f.to===name) || (f.from===name && f.to===me));
+}
+
+/* Mesajlaşma yardımcıları */
+function conversationWith(name){
+  const me = profile.name;
+  return messages
+    .filter(m=> (m.from===me && m.to===name) || (m.from===name && m.to===me))
+    .sort((a,b)=> new Date(a.time) - new Date(b.time));
+}
+function unreadFrom(name){
+  const me = profile.name;
+  const seenKey = 'sc:seen:' + name;
+  let lastSeen = 0;
+  try{ lastSeen = parseInt(localStorage.getItem(seenKey) || '0'); }catch(e){}
+  return messages.filter(m=> m.from===name && m.to===me && new Date(m.time).getTime() > lastSeen).length;
+}
+function totalUnread(){
+  return myAcceptedFriends().reduce((sum,name)=> sum + unreadFrom(name), 0);
+}
+function markSeen(name){
+  try{ localStorage.setItem('sc:seen:' + name, String(Date.now())); }catch(e){}
+}
+function myPendingInvites(){
+  const me = profile.name;
+  return invites.filter(i=> i.to===me && i.status==='pending');
+}
+/* Panel açıkken yeni davetleri otomatik çek */
+let invitePollTimer = null;
+function startInvitePolling(){
+  if(invitePollTimer) clearInterval(invitePollTimer);
+  invitePollTimer = setInterval(async ()=>{
+    if(!profile || currentRoom || dmWith || adminMode){ clearInterval(invitePollTimer); invitePollTimer=null; return; }
+    const fresh = (await sGet('sc:invites', true)) || [];
+    const before = myPendingInvites().length;
+    invites = fresh;
+    if(myPendingInvites().length !== before){ render(); }
+  }, 4000);
+}
+function scrollThreadToBottom(){
+  setTimeout(()=>{
+    const t = document.getElementById('dmThread');
+    if(t) t.scrollTop = t.scrollHeight;
+  }, 50);
+}
+/* Sohbet açıkken karşı taraftan gelen yeni mesajları otomatik çek */
+let dmPollTimer = null;
+function startDmPolling(){
+  if(dmPollTimer) clearInterval(dmPollTimer);
+  dmPollTimer = setInterval(async ()=>{
+    if(!dmWith){ clearInterval(dmPollTimer); dmPollTimer=null; return; }
+    const fresh = (await sGet('sc:messages', true)) || [];
+    if(fresh.length !== messages.length){
+      messages = fresh;
+      markSeen(dmWith);
+      const t = document.getElementById('dmThread');
+      const wasAtBottom = t && (t.scrollHeight - t.scrollTop - t.clientHeight < 60);
+      render();
+      if(wasAtBottom) scrollThreadToBottom();
+    }
+  }, 3000);
+}
+async function saveReports(){ await sSet('sc:reports', reports, true); }
+
+/* ---------- Renderers ---------- */
+function render(){
+  const el = document.getElementById('app');
+  el.innerHTML = topbarHTML() + bodyHTML() + `<footer>BLAH BLAH ENGLISH — ÜCRETSİZ, GÜVENLİ, SESLİ KONUŞMA TOPLULUĞU</footer>`;
+  attachHandlers();
+  initCallIfNeeded();
+  if(dmWith){ scrollThreadToBottom(); startDmPolling(); }
+  if(profile && profile.status==='approved' && !currentRoom && !dmWith && !adminMode){ startInvitePolling(); }
+}
+
+function topbarHTML(){
+  return `
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="brand-name">Blah Blah English</div>
+    </div>
+    <button class="admin-toggle" id="adminToggle">${adminMode ? '← Üye Görünümü' : 'Yönetici Paneli'}</button>
+  </div>`;
+}
+
+function bodyHTML(){
+  if(adminMode && !adminUnlocked) return adminLoginHTML();
+  if(adminMode) return adminHTML();
+  if(currentRoom) return roomHTML();
+  if(dmWith) return dmHTML();
+  if(!profile) return landingHTML() + (authMode==='login' ? loginHTML() : formHTML());
+  if(profile.status === 'pending') return pendingHTML();
+  if(profile.status === 'rejected') return rejectedHTML();
+  return dashboardHTML();
+}
+
+function landingHTML(){
+  return `
+  <div class="hero">
+    <div class="eyebrow">Sesli · Ücretsiz · Onaylı Üyelik</div>
+    <h1>Konuşarak öğren,<br><em>güvenle</em> pratik yap.</h1>
+    <p>Kamerasız, sadece sesli sohbet odalarında seviyene uygun biriyle eşleş. Her üye, katılmadan önce bir başvurudan geçer — topluluğu güvende tutmak için.</p>
+  </div>`;
+}
+
+function formHTML(){
+  return `
+  <div class="card">
+    <label>Kullanıcı Adı</label>
+    <div class="field"><input type="text" id="f_name" placeholder="Kullanıcı adın"></div>
+    <label>Şifre</label>
+    <div class="field"><input type="password" id="f_password" placeholder="Şifren"></div>
+    <label>Kısa Biyografi</label>
+    <div class="field"><textarea id="f_reason" placeholder="Kendini kısaca tanıt: nerelisin, hangi dilleri konuşuyorsun, neden katılmak istiyorsun..."></textarea></div>
+    <label>İlgilendiğin seviye (opsiyonel)</label>
+    <div class="field">
+      <div class="level-row" id="levelRow">
+        ${LEVELS.map(l=>`<div class="level-pill ${l.id===selectedLevel?'active':''}" data-level="${l.id}">${l.label}</div>`).join('')}
+      </div>
+    </div>
+    <div class="checkline">
+      <input type="checkbox" id="f_agree">
+      <span>Topluluk kurallarını okudum ve kabul ediyorum: taciz, sarkıntılık ve siyasi tartışma kesinlikle yasaktır. İhlal eden üyeler kalıcı olarak uzaklaştırılır.</span>
+    </div>
+    <button class="btn btn-primary" id="submitApp" disabled>Başvuruyu Gönder</button>
+    <div style="margin-top:16px; text-align:center;">
+      <button class="link-btn" id="toLogin">Giriş Yap</button>
+    </div>
+  </div>`;
+}
+
+function loginHTML(){
+  return `
+  <div class="card">
+    <label>Kullanıcı Adı</label>
+    <div class="field"><input type="text" id="l_name" placeholder="Kullanıcı adın"></div>
+    <label>Şifre</label>
+    <div class="field"><input type="password" id="l_password" placeholder="Şifren"></div>
+    <button class="btn btn-primary" id="loginBtn">Giriş Yap</button>
+    <div style="margin-top:16px; text-align:center;">
+      <button class="link-btn" id="toApply">Henüz üye değilim, başvuru yapmak istiyorum</button>
+    </div>
+  </div>`;
+}
+
+function pendingHTML(){
+  return `
+  <div class="card pending-wrap">
+    <div class="pulse-dot"></div>
+    <h2>Başvurun inceleniyor</h2>
+    <p>Merhaba ${profile.name}, başvurunu aldık. Bir yönetici incelemeyi tamamladığında hesabın aktif olacak.</p>
+    <button class="btn btn-ghost btn-small" id="checkStatus">Durumu Kontrol Et</button>
+  </div>`;
+}
+
+function rejectedHTML(){
+  return `
+  <div class="card pending-wrap">
+    <h2>Başvurun onaylanmadı</h2>
+    <p>Bu sefer topluluğa kabul edilmedin. Bir hata olduğunu düşünüyorsan tekrar başvurabilirsin.</p>
+    <button class="btn btn-ghost btn-small" id="reapply">Yeniden Başvur</button>
+  </div>`;
+}
+
+function dashboardHTML(){
+  return `
+  ${myPendingInvites().length ? `
+  <div class="card" style="margin-bottom:20px; border-color:var(--amber);">
+    <div class="section-title">🎙 Sohbet Davetleri (${myPendingInvites().length})</div>
+    ${myPendingInvites().map(inv=>`
+      <div class="friend-row">
+        <div class="frow-left"><div class="avatar">${inv.from[0].toUpperCase()}</div><div><strong>${inv.from}</strong> seni <strong>${inv.roomName}</strong> odasına çağırdı</div></div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary btn-small" data-accept-invite="${inv.id}">Katıl</button>
+          <button class="btn btn-danger btn-small" data-decline-invite="${inv.id}">Yoksay</button>
+        </div>
+      </div>`).join('')}
+  </div>` : ''}
+  <div class="card" style="margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
+    <div>
+      <div style="font-family:var(--display); font-size:20px; font-weight:600; margin-bottom:6px;">Merhaba, ${profile.name}</div>
+      <span class="badge badge-level">${LEVELS.find(l=>l.id===profile.level)?.label}</span>
+      <div style="margin-top:8px;"><button class="link-btn" id="logoutBtn">Çıkış yap</button></div>
+    </div>
+    <button class="btn btn-primary" id="findMatch">Eşleşme Bul</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab ${currentTab==='match'?'active':''}" data-tab="match">Odalar</div>
+    <div class="tab ${currentTab==='friends'?'active':''}" data-tab="friends">Arkadaşlar${(myIncomingRequests().length || totalUnread()) ? ' <span style="color:var(--coral);">●</span>' : ''}</div>
+  </div>
+
+  ${currentTab==='match' ? `
+    <div class="card">
+      <div class="section-title">Kendi odanı kur</div>
+      <div class="section-sub">Bir konu seç, istersen odaya özel bir isim ver.</div>
+      <div class="field">
+        <div class="level-row" id="topicRow" style="flex-wrap:wrap;">
+          ${ROOM_TOPICS.map(t=>`<div class="level-pill ${t===selectedTopic?'active':''}" data-topic="${t}" style="flex:none; padding:9px 14px;">${t}</div>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="roomName" placeholder="Özel oda adı (opsiyonel)" style="flex:1;">
+        <button class="btn btn-primary btn-small" id="createRoom">Oluştur</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Açık odalar</div>
+      <div class="section-sub">${rooms.length} oda aktif</div>
+      ${rooms.length ? rooms.map(roomItemHTML).join('') : `<div class="empty">Şu an açık oda yok — ilk odayı sen kur.</div>`}
+    </div>
+  ` : `
+    <div class="card">
+      <div class="section-title">Arkadaş ekle</div>
+      <div class="section-sub">Kullanıcı adını yaz, arkadaşlık isteği gönder.</div>
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="friendName" placeholder="Kullanıcı adı">
+        <button class="btn btn-primary btn-small" id="addFriend">İstek Gönder</button>
+      </div>
+    </div>
+
+    ${myIncomingRequests().length ? `
+    <div class="card">
+      <div class="section-title">Gelen istekler (${myIncomingRequests().length})</div>
+      ${myIncomingRequests().map(f=>`
+        <div class="friend-row">
+          <div class="frow-left"><div class="avatar">${f.from[0].toUpperCase()}</div>${f.from}</div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary btn-small" data-accept-req="${f.id}">Kabul</button>
+            <button class="btn btn-danger btn-small" data-reject-req="${f.id}">Reddet</button>
+          </div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    <div class="card" style="padding:8px 28px;">
+      <div class="section-title" style="padding:16px 0 8px;">Arkadaşların (${myAcceptedFriends().length})</div>
+      ${myAcceptedFriends().length ? myAcceptedFriends().map(name=>`
+        <div class="friend-row">
+          <div class="frow-left"><div class="avatar">${name[0].toUpperCase()}</div>${name}</div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn btn-primary btn-small" data-message="${name}">Mesaj${unreadFrom(name) ? ` <span style="background:var(--coral); color:#fff; border-radius:10px; padding:0 6px; font-size:11px;">${unreadFrom(name)}</span>` : ''}</button>
+            <button class="link-btn" data-remove-friendship="${name}">Çıkar</button>
+          </div>
+        </div>`).join('') : `<div class="empty" style="border:none;">Henüz arkadaşın yok.</div>`}
+    </div>
+
+    ${myOutgoingRequests().length ? `
+    <div class="card" style="padding:8px 28px;">
+      <div class="section-title" style="padding:16px 0 8px;">Gönderilen istekler</div>
+      ${myOutgoingRequests().map(name=>`
+        <div class="friend-row">
+          <div class="frow-left"><div class="avatar">${name[0].toUpperCase()}</div>${name}</div>
+          <span style="color:var(--faint); font-size:12px; font-family:var(--mono);">bekliyor</span>
+        </div>`).join('')}
+    </div>` : ''}
+  `}
+  `;
+}
+
+function roomItemHTML(r){
+  return `
+  <div class="room-item">
+    <div>
+      <div class="rname">${r.name}</div>
+      <div class="rmeta">${r.topic} · ${r.host} kurdu · Sadece Sesli</div>
+    </div>
+    <button class="btn btn-ghost btn-small" data-join-room="${r.id}">Katıl</button>
+  </div>`;
+}
+
+function dmHTML(){
+  const convo = conversationWith(dmWith);
+  const me = profile.name;
+  return `
+  <div class="card" style="margin-bottom:16px; display:flex; align-items:center; gap:12px;">
+    <button class="link-btn" id="dmBack">← Geri</button>
+    <div class="avatar">${dmWith[0].toUpperCase()}</div>
+    <div style="font-family:var(--display); font-size:18px; font-weight:600;">${dmWith}</div>
+  </div>
+  <div class="card">
+    <div class="dm-thread" id="dmThread">
+      ${convo.length ? convo.map(m=>`
+        <div class="bubble ${m.from===me ? 'me' : 'them'}">
+          ${escapeHtml(m.text)}
+          <div class="bubble-time">${formatTime(m.time)}</div>
+        </div>`).join('') : `<div class="empty" style="border:none; margin:auto;">Henüz mesaj yok. İlk mesajı sen yaz 👋</div>`}
+    </div>
+    <div class="dm-input-row">
+      <input type="text" id="dmInput" placeholder="Mesaj yaz..." maxlength="500">
+      <button class="btn btn-primary btn-small" id="dmSend">Gönder</button>
+    </div>
+  </div>`;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function formatTime(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+  }catch(e){ return ''; }
+}
+
+function roomHTML(){
+  return `
+  <div class="card">
+    <div class="room-header">
+      <div class="room-title">${currentRoom.name}</div>
+      <span class="badge badge-level">Sadece Sesli · Canlı</span>
+    </div>
+    <div style="padding:50px 28px; text-align:center;">
+      <div class="voice-ring"><div class="core">🎙</div></div>
+      <p style="color:var(--muted); font-size:14px; margin:16px auto 0; max-width:340px; line-height:1.6;">Sesli oda ayrı bir pencerede açılıyor. Mikrofon iznini onayla ve konuşmaya başla. Ayrıldığında buraya geri döneceksin.</p>
+      <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+        <button class="btn btn-primary" id="reopenRoom">Odayı Tekrar Aç</button>
+        <button class="btn btn-ghost" id="inviteFriends">Arkadaş Davet Et</button>
+      </div>
+    </div>
+    <div class="room-controls">
+      <button class="btn btn-danger" id="reportBtn">Bildir</button>
+      <button class="btn btn-primary" id="leaveRoom">Ayrıl</button>
+    </div>
+  </div>`;
+}
+
+function initCallIfNeeded(){
+  if(!currentRoom || adminMode) return;
+  startVideoSDKMeeting();
+}
+
+function startVideoSDKMeeting(){
+  const launch = ()=>{
+    try{
+      const meeting = new VideoSDKMeeting();
+      meeting.init({
+        name: profile.name,
+        apiKey: VIDEOSDK_TOKEN,
+        meetingId: 'bbe-' + currentRoom.id,
+        containerId: null,
+        micEnabled: true,
+        webcamEnabled: false,
+        participantCanToggleSelfWebcam: false,
+        participantCanToggleSelfMic: true,
+        chatEnabled: true,
+        screenShareEnabled: false,
+        raiseHandEnabled: true,
+        recordingEnabled: false,
+        participantCanLeave: true,
+        joinScreenEnabled: false,
+        redirectOnLeave: window.location.href
+      });
+    }catch(e){ toast('Bağlantı kurulamadı, tekrar dene'); }
+  };
+
+  if(typeof VideoSDKMeeting !== 'undefined'){ launch(); return; }
+  // Resmi dinamik yükleme yöntemi
+  const script = document.createElement('script');
+  script.src = 'https://sdk.videosdk.live/rtc-js-prebuilt/0.3.43/rtc-js-prebuilt.js';
+  script.addEventListener('load', launch);
+  script.addEventListener('error', ()=>{ toast('Sesli bağlantı yüklenemedi'); });
+  document.getElementsByTagName('head')[0].appendChild(script);
+}
+
+function leaveRoomAction(){
+  currentRoom = null;
+  render();
+}
+
+function adminLoginHTML(){
+  return `
+  <div class="hero" style="margin-bottom:24px;">
+    <div class="eyebrow">Yönetici Girişi</div>
+    <h1 style="font-size:30px;">Panele erişim</h1>
+  </div>
+  <div class="card">
+    <label>Yönetici Şifresi</label>
+    <div class="field"><input type="password" id="admin_pw" placeholder="Şifreni gir" autofocus></div>
+    <button class="btn btn-primary" id="adminLoginBtn">Giriş Yap</button>
+    <div style="margin-top:16px; text-align:center;">
+      <button class="link-btn" id="adminBackBtn">← Üye görünümüne dön</button>
+    </div>
+  </div>`;
+}
+
+function adminHTML(){
+  const pending = applications.filter(a=>a.status==='pending');
+  const decided = applications.filter(a=>a.status!=='pending');
+  return `
+  <div class="hero" style="margin-bottom:24px;">
+    <div class="eyebrow">Yönetici Paneli</div>
+    <h1 style="font-size:30px;">Başvuruları incele</h1>
+  </div>
+  <div class="card">
+    <div class="section-title">Bekleyen başvurular (${pending.length})</div>
+    ${pending.length ? pending.map(a=>`
+      <div class="app-item">
+        <h4>${a.name} <span class="status-chip status-pending">bekliyor</span></h4>
+        <p><strong>İlgi seviyesi:</strong> ${LEVELS.find(l=>l.id===a.level)?.label}</p>
+        <p><strong>Bio:</strong> ${a.reason || '—'}</p>
+        <div class="app-actions">
+          <button class="btn btn-primary btn-small" data-approve="${a.id}">Onayla</button>
+          <button class="btn btn-danger btn-small" data-reject="${a.id}">Reddet</button>
+        </div>
+      </div>
+    `).join('') : `<div class="empty">Bekleyen başvuru yok.</div>`}
+  </div>
+  ${decided.length ? `
+  <div class="card">
+    <div class="section-title">Geçmiş kararlar</div>
+    ${decided.map(a=>`
+      <div class="app-item">
+        <h4>${a.name} <span class="status-chip ${a.status==='approved'?'status-approved':a.status==='suspended'?'status-rejected':'status-rejected'}">${a.status==='approved'?'onaylandı':a.status==='suspended'?'askıya alındı':'reddedildi'}</span></h4>
+        ${a.status==='suspended' ? `<div class="app-actions"><button class="btn btn-primary btn-small" data-unsuspend="${a.id}">Askıyı Kaldır</button></div>` : ''}
+      </div>
+    `).join('')}
+  </div>` : ''}
+  ${adminReportsHTML()}
+  `;
+}
+
+function adminReportsHTML(){
+  const open = reports.filter(r=>!r.handled);
+  // kullanıcı başına şikayet sayısı
+  const counts = {};
+  reports.forEach(r=>{ counts[r.reportedName] = (counts[r.reportedName]||0)+1; });
+  const flagged = Object.keys(counts).filter(n=>counts[n]>=3);
+  return `
+  <div class="card">
+    <div class="section-title">Şikayetler (${open.length} açık)</div>
+    <div class="section-sub">3+ şikayet alan kullanıcılar otomatik işaretlenir.</div>
+    ${flagged.length ? `<div style="margin-bottom:14px; padding:12px 14px; border:1px solid rgba(225,105,75,0.4); border-radius:10px; background:rgba(225,105,75,0.08); color:var(--coral); font-size:13px;">⚠️ Çok şikayet alanlar: ${flagged.map(n=>`${n} (${counts[n]})`).join(', ')}</div>` : ''}
+    ${open.length ? open.map(r=>`
+      <div class="app-item">
+        <h4>${r.reportedName} <span class="status-chip status-rejected">${counts[r.reportedName]} şikayet</span></h4>
+        <p><strong>Sebep:</strong> ${r.reason}</p>
+        <p><strong>Bildiren:</strong> ${r.reporterName} · <strong>Oda:</strong> ${r.room}</p>
+        <div class="app-actions">
+          <button class="btn btn-danger btn-small" data-suspend="${r.reportedName}">Kullanıcıyı Askıya Al</button>
+          <button class="btn btn-ghost btn-small" data-dismiss-report="${r.id}">Şikayeti Kapat</button>
+        </div>
+      </div>
+    `).join('') : `<div class="empty">Açık şikayet yok.</div>`}
+  </div>`;
+}
+
+/* ---------- Event handlers ---------- */
+function attachHandlers(){
+  const adminToggle = document.getElementById('adminToggle');
+  if(adminToggle) adminToggle.onclick = ()=>{
+    if(adminMode){ adminMode = false; render(); return; }
+    adminMode = true; render();
+  };
+
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
+  if(adminLoginBtn) adminLoginBtn.onclick = async ()=>{
+    const pw = document.getElementById('admin_pw').value.trim();
+    if(!pw){ toast('Şifre gir'); return; }
+    const h = await hashPassword(pw);
+    if(h === ADMIN_PASSWORD_HASH){
+      adminUnlocked = true;
+      render();
+    } else {
+      toast('Yönetici şifresi yanlış');
+    }
+  };
+  const adminPwInput = document.getElementById('admin_pw');
+  if(adminPwInput) adminPwInput.addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('adminLoginBtn').click(); });
+  const adminBackBtn = document.getElementById('adminBackBtn');
+  if(adminBackBtn) adminBackBtn.onclick = ()=>{ adminMode = false; render(); };
+
+  const levelRow = document.getElementById('levelRow');
+  if(levelRow) levelRow.querySelectorAll('.level-pill').forEach(p=>{
+    p.onclick = ()=>{ selectedLevel = p.dataset.level; render(); };
+  });
+
+  const topicRow = document.getElementById('topicRow');
+  if(topicRow) topicRow.querySelectorAll('.level-pill').forEach(p=>{
+    p.onclick = ()=>{ selectedTopic = p.dataset.topic; render(); };
+  });
+
+  const agree = document.getElementById('f_agree');
+  const submitBtn = document.getElementById('submitApp');
+  if(agree && submitBtn){
+    agree.onchange = ()=>{ submitBtn.disabled = !agree.checked; };
+    submitBtn.onclick = async ()=>{
+      const name = document.getElementById('f_name').value.trim();
+      const password = document.getElementById('f_password').value.trim();
+      const reason = document.getElementById('f_reason').value.trim();
+      if(!name || !password){ toast('Lütfen kullanıcı adı ve şifre gir'); return; }
+      if(password.length < 4){ toast('Şifre en az 4 karakter olmalı'); return; }
+      if(name.length < 2){ toast('Kullanıcı adı çok kısa'); return; }
+      if(reason.length < 10){ toast('Lütfen kendini biraz tanıt (en az 10 karakter)'); return; }
+      // Spam koruması: son başvurudan bu yana en az 30 saniye geçmeli
+      try{
+        const last = parseInt(localStorage.getItem('sc:lastApply') || '0');
+        if(Date.now() - last < 30000){ toast('Çok hızlı, lütfen biraz bekle'); return; }
+      }catch(e){}
+      // Aynı kullanıcı adı zaten var mı?
+      applications = (await sGet('sc:applications', true)) || [];
+      if(applications.some(a => a.name.toLowerCase() === name.toLowerCase())){
+        toast('Bu kullanıcı adı zaten alınmış'); return;
+      }
+      const appId = uid();
+      const passwordHash = await hashPassword(password);
+      const application = { id: appId, name, passwordHash, level: selectedLevel, reason, status:'pending' };
+      applications.push(application);
+      await saveApplications();
+      try{ localStorage.setItem('sc:lastApply', String(Date.now())); }catch(e){}
+      profile = { id: uid(), name, level: selectedLevel, status:'pending', appId };
+      await saveProfile();
+      render();
+    };
+  }
+
+  const toLogin = document.getElementById('toLogin');
+  if(toLogin) toLogin.onclick = ()=>{ authMode = 'login'; render(); };
+  const toApply = document.getElementById('toApply');
+  if(toApply) toApply.onclick = ()=>{ authMode = 'apply'; render(); };
+
+  const loginBtn = document.getElementById('loginBtn');
+  if(loginBtn) loginBtn.onclick = async ()=>{
+    const name = document.getElementById('l_name').value.trim();
+    const password = document.getElementById('l_password').value.trim();
+    if(!name || !password){ toast('Kullanıcı adı ve şifre gir'); return; }
+    applications = (await sGet('sc:applications', true)) || [];
+    const passwordHash = await hashPassword(password);
+    const app = applications.find(a => a.name === name && (a.passwordHash === passwordHash || a.password === password));
+    if(!app){ toast('Kullanıcı adı veya şifre yanlış'); return; }
+    if(app.status === 'suspended'){ toast('Hesabın askıya alındı'); return; }
+    if(app.status === 'pending'){ toast('Başvurun hâlâ inceleniyor'); return; }
+    if(app.status === 'rejected'){ toast('Başvurun onaylanmadı'); return; }
+    profile = { id: uid(), name: app.name, level: app.level, status:'approved', appId: app.id };
+    await saveProfile();
+    authMode = 'apply';
+    render();
+  };
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  if(logoutBtn) logoutBtn.onclick = async ()=>{
+    profile = null;
+    try{ localStorage.removeItem('sc:profile'); }catch(e){}
+    friends = [];
+    authMode = 'apply';
+    render();
+  };
+
+  const checkStatus = document.getElementById('checkStatus');
+  if(checkStatus) checkStatus.onclick = async ()=>{
+    applications = (await sGet('sc:applications', true)) || [];
+    const app = applications.find(a=>a.id === profile.appId);
+    if(app && app.status !== 'pending'){
+      profile.status = app.status;
+      await saveProfile();
+      toast(app.status === 'approved' ? 'Başvurun onaylandı! 🎉' : 'Başvurun reddedildi.');
+    } else {
+      toast('Henüz karar verilmedi.');
+    }
+    render();
+  };
+
+  const reapply = document.getElementById('reapply');
+  if(reapply) reapply.onclick = async ()=>{ profile = null; await saveProfile(); render(); };
+
+  document.querySelectorAll('[data-approve]').forEach(b=>{
+    b.onclick = async ()=>{
+      const a = applications.find(x=>x.id===b.dataset.approve);
+      if(a) a.status = 'approved';
+      await saveApplications();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-reject]').forEach(b=>{
+    b.onclick = async ()=>{
+      const a = applications.find(x=>x.id===b.dataset.reject);
+      if(a) a.status = 'rejected';
+      await saveApplications();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-suspend]').forEach(b=>{
+    b.onclick = async ()=>{
+      const name = b.dataset.suspend;
+      applications = (await sGet('sc:applications', true)) || [];
+      const a = applications.find(x=>x.name===name);
+      if(a){ a.status = 'suspended'; await saveApplications(); }
+      // bu kullanıcıya ait açık şikayetleri kapat
+      reports = (await sGet('sc:reports', true)) || [];
+      reports.forEach(r=>{ if(r.reportedName===name) r.handled = true; });
+      await saveReports();
+      toast(name + ' askıya alındı');
+      render();
+    };
+  });
+  document.querySelectorAll('[data-unsuspend]').forEach(b=>{
+    b.onclick = async ()=>{
+      const a = applications.find(x=>x.id===b.dataset.unsuspend);
+      if(a){ a.status = 'approved'; await saveApplications(); }
+      render();
+    };
+  });
+  document.querySelectorAll('[data-dismiss-report]').forEach(b=>{
+    b.onclick = async ()=>{
+      reports = (await sGet('sc:reports', true)) || [];
+      const r = reports.find(x=>x.id===b.dataset.dismissReport);
+      if(r) r.handled = true;
+      await saveReports();
+      render();
+    };
+  });
+
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(t=>{ t.onclick = ()=>{ currentTab = t.dataset.tab; render(); }; });
+
+  const findMatch = document.getElementById('findMatch');
+  if(findMatch) findMatch.onclick = async ()=>{
+    const open = rooms.find(r => r.topic === 'Daily Conversation' && r.host !== profile.name);
+    if(open){
+      currentRoom = open;
+    } else {
+      const room = { id: uid(), name: 'Hızlı Eşleşme', topic: 'Daily Conversation', level: profile.level, host: profile.name };
+      rooms.push(room);
+      await saveRooms();
+      currentRoom = room;
+    }
+    render();
+  };
+
+  const createRoom = document.getElementById('createRoom');
+  if(createRoom) createRoom.onclick = async ()=>{
+    const input = document.getElementById('roomName');
+    const customName = input.value.trim();
+    const name = customName || selectedTopic;
+    const room = { id: uid(), name, topic: selectedTopic, level: profile.level, host: profile.name };
+    rooms.push(room);
+    await saveRooms();
+    toast('Oda oluşturuldu');
+    render();
+  };
+
+  document.querySelectorAll('[data-join-room]').forEach(b=>{
+    b.onclick = ()=>{
+      const room = rooms.find(r=>r.id===b.dataset.joinRoom);
+      if(room){ currentRoom = room; render(); }
+    };
+  });
+
+  const addFriend = document.getElementById('addFriend');
+  if(addFriend) addFriend.onclick = async ()=>{
+    const input = document.getElementById('friendName');
+    const name = input.value.trim();
+    if(!name){ return; }
+    if(name.toLowerCase() === profile.name.toLowerCase()){ toast('Kendine istek gönderemezsin'); return; }
+    // kişi gerçekten üye mi (onaylı başvuru var mı)?
+    applications = (await sGet('sc:applications', true)) || [];
+    const exists = applications.some(a => a.name.toLowerCase() === name.toLowerCase() && a.status === 'approved');
+    if(!exists){ toast('Böyle bir üye bulunamadı'); return; }
+    friendships = (await sGet('sc:friendships', true)) || [];
+    if(friendshipWith(name)){ toast('Zaten istek gönderilmiş veya arkadaşsınız'); return; }
+    friendships.push({ id: uid(), from: profile.name, to: name, status: 'pending' });
+    await saveFriendships();
+    toast('Arkadaşlık isteği gönderildi');
+    render();
+  };
+  document.querySelectorAll('[data-accept-req]').forEach(b=>{
+    b.onclick = async ()=>{
+      friendships = (await sGet('sc:friendships', true)) || [];
+      const f = friendships.find(x=>x.id===b.dataset.acceptReq);
+      if(f){ f.status = 'accepted'; await saveFriendships(); }
+      render();
+    };
+  });
+  document.querySelectorAll('[data-reject-req]').forEach(b=>{
+    b.onclick = async ()=>{
+      friendships = (await sGet('sc:friendships', true)) || [];
+      friendships = friendships.filter(x=>x.id!==b.dataset.rejectReq);
+      await saveFriendships();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-remove-friendship]').forEach(b=>{
+    b.onclick = async ()=>{
+      const name = b.dataset.removeFriendship;
+      friendships = (await sGet('sc:friendships', true)) || [];
+      friendships = friendships.filter(x=> !((x.from===profile.name && x.to===name) || (x.from===name && x.to===profile.name)));
+      await saveFriendships();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-accept-invite]').forEach(b=>{
+    b.onclick = async ()=>{
+      invites = (await sGet('sc:invites', true)) || [];
+      const inv = invites.find(x=>x.id===b.dataset.acceptInvite);
+      if(!inv){ toast('Davet bulunamadı'); return; }
+      inv.status = 'accepted';
+      await saveInvites();
+      rooms = (await sGet('sc:rooms', true)) || [];
+      let room = rooms.find(r=>r.id===inv.roomId);
+      if(!room){
+        room = { id: inv.roomId, name: inv.roomName, topic: inv.roomName, level: profile.level, host: inv.from };
+        rooms.push(room); await saveRooms();
+      }
+      currentRoom = room;
+      render();
+    };
+  });
+  document.querySelectorAll('[data-decline-invite]').forEach(b=>{
+    b.onclick = async ()=>{
+      invites = (await sGet('sc:invites', true)) || [];
+      const inv = invites.find(x=>x.id===b.dataset.declineInvite);
+      if(inv) inv.status = 'declined';
+      await saveInvites();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-message]').forEach(b=>{
+    b.onclick = async ()=>{
+      dmWith = b.dataset.message;
+      messages = (await sGet('sc:messages', true)) || [];
+      markSeen(dmWith);
+      render();
+      scrollThreadToBottom();
+    };
+  });
+  const dmBack = document.getElementById('dmBack');
+  if(dmBack) dmBack.onclick = ()=>{ markSeen(dmWith); dmWith = null; render(); };
+  const dmSend = document.getElementById('dmSend');
+  const dmInput = document.getElementById('dmInput');
+  async function sendDm(){
+    const text = dmInput.value.trim();
+    if(!text) return;
+    // güvenlik: hâlâ arkadaş mıyız?
+    friendships = (await sGet('sc:friendships', true)) || [];
+    const fr = friendships.find(f=> f.status==='accepted' && ((f.from===profile.name && f.to===dmWith) || (f.from===dmWith && f.to===profile.name)));
+    if(!fr){ toast('Bu kişiyle artık arkadaş değilsiniz'); dmWith=null; render(); return; }
+    messages = (await sGet('sc:messages', true)) || [];
+    messages.push({ id: uid(), from: profile.name, to: dmWith, text, time: new Date().toISOString() });
+    await saveMessages();
+    dmInput.value = '';
+    markSeen(dmWith);
+    render();
+    scrollThreadToBottom();
+  }
+  if(dmSend) dmSend.onclick = sendDm;
+  if(dmInput) dmInput.addEventListener('keydown', e=>{ if(e.key==='Enter') sendDm(); });
+
+  const reportBtn = document.getElementById('reportBtn');
+  if(reportBtn) reportBtn.onclick = async ()=>{
+    const reported = await modalPrompt({
+      title: 'Kullanıcıyı Bildir',
+      subtitle: 'Rahatsızlık veren kişinin kullanıcı adını yaz.',
+      placeholder: 'Kullanıcı adı'
+    });
+    if(!reported || !reported.trim()) return;
+    const reason = await modalPrompt({
+      title: 'Şikayet Sebebi',
+      subtitle: reported.trim() + ' kullanıcısını neden bildiriyorsun?',
+      options: ['Taciz / sarkıntılık', 'Siyaset yapıyor', 'Uygunsuz davranış', 'Hakaret / küfür', 'Diğer']
+    });
+    if(reason === null) return;
+    reports = (await sGet('sc:reports', true)) || [];
+    reports.push({
+      id: uid(),
+      reportedName: reported.trim(),
+      reporterName: profile.name,
+      room: currentRoom ? currentRoom.name : '-',
+      reason: reason,
+      time: new Date().toISOString(),
+      handled: false
+    });
+    await saveReports();
+    toast('Bildirimin alındı, ekip inceleyecek.');
+  };
+  const reopenRoom = document.getElementById('reopenRoom');
+  if(reopenRoom) reopenRoom.onclick = ()=>{ startVideoSDKMeeting(); };
+  const inviteFriends = document.getElementById('inviteFriends');
+  if(inviteFriends) inviteFriends.onclick = async ()=>{
+    const list = myAcceptedFriends();
+    if(!list.length){ toast('Önce arkadaş eklemelisin'); return; }
+    const chosen = await modalPrompt({
+      title: 'Arkadaş Davet Et',
+      subtitle: currentRoom.name + ' odasına kimi çağırmak istersin?',
+      options: list
+    });
+    if(!chosen) return;
+    invites = (await sGet('sc:invites', true)) || [];
+    // aynı kişiye aynı odaya tekrar bekleyen davet varsa engelle
+    if(invites.some(i=> i.to===chosen && i.roomId===currentRoom.id && i.status==='pending')){
+      toast('Bu kişiye zaten davet gönderdin'); return;
+    }
+    invites.push({
+      id: uid(), from: profile.name, to: chosen,
+      roomId: currentRoom.id, roomName: currentRoom.name,
+      time: new Date().toISOString(), status: 'pending'
+    });
+    await saveInvites();
+    toast(chosen + ' davet edildi');
+  };
+  const leaveRoom = document.getElementById('leaveRoom');
+  if(leaveRoom) leaveRoom.onclick = leaveRoomAction;
+}
+
+/* ---------- Init ---------- */
+(async function init(){
+  await loadAll();
+  render();
+})();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
